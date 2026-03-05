@@ -29,13 +29,18 @@ class ClientController extends Controller
      */
     public function store(Request $request)
     {
-        $client = Client::create($request->only([
-            'name',
-            'email',
-            'phone'
-        ]));
+        $validated = $request->validate([
+            'type' => 'required|in:individual,company',
+            'name' => 'required|string|max:255',
+            'dni_cif' => 'required|string|max:20',
+            'phone' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'notes' => 'nullable|string'
+        ]);
 
-        return response()->json($client);
+        $client = Client::create($validated);
+
+        return response()->json($client, 201);
     }
 
     /**
@@ -76,5 +81,14 @@ class ClientController extends Controller
         $client->delete();
 
         return response()->json(['deleted' => true]);
+    }
+
+    public function checkDni(string $dni)
+    {
+        $exists = Client::where('dni_cif', $dni)->exists();
+
+        return response()->json([
+            'exists' => $exists
+        ]);
     }
 }
