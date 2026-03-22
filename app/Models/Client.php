@@ -9,6 +9,7 @@ class Client extends Model
 {
     protected $casts = [
         'type' => ClientType::class,
+        'phone' => 'array'
     ];
 
     protected $fillable = [
@@ -19,5 +20,14 @@ class Client extends Model
         'email',
         'notes'
     ];
+
+    public function addresses(){
+        return $this->hasMany(Address::class);
+    }
+
+    public function devices()
+    {
+        return $this->hasMany(Device::class);
+    }
 
 }
