@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use App\Http\Controllers\Controller;
-use App\Models\Device;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -41,22 +40,23 @@ class ClientController extends Controller
             'notes' => 'nullable|string',
 
             'client_addresses' => 'nullable|array',
-            'client_addresses.*.address' => 'required|string|max:255',
-            'client_addresses.*.city' => 'required|string|max:100',
-            'client_addresses.*.postal_code' => 'nullable|string|max:9999999999',
+            'client_addresses.*.address' => 'nullable|string|max:255',
+            'client_addresses.*.city' => 'nullable|string|max:100',
+            'client_addresses.*.postal_code' => 'nullable|string|max:20',
             'client_addresses.*.province' => 'nullable|string|max:100',
             'client_addresses.*.country' => 'nullable|string|max:100',
             'client_addresses.*.label' => 'nullable|string|max:100',
 
             'devices' => 'nullable|array',
             'devices.*.type' => 'sometimes|required|string|max:255',
-            'devices.*.brand' => 'sometimes|required|string|max:255',
-            'devices.*.model' => 'sometimes|required|string|max:255',
-            'devices.*.serial_number' => 'sometimes|required|string|max:255',
-            'devices.*.imei' => 'sometimes|required|string|max:255',
-            'devices.*.password' => 'sometimes|required|string|max:255',
-            'devices.*.condition_notes' => 'sometimes|required|string|max:255',
-            'devices.*.notes' => 'sometimes|required|string|max:255',
+            'devices.*.brand' => 'sometimes|nullable|string|max:255',
+            'devices.*.model' => 'sometimes|nullable|string|max:255',
+            'devices.*.serial_number' => 'sometimes|nullable|string|max:255',
+            'devices.*.imei' => 'sometimes|nullable|string|max:255',
+            'devices.*.sim' => 'sometimes|nullable|string|max:255',
+            'devices.*.password' => 'sometimes|nullable|string|max:255',
+            'devices.*.condition_notes' => 'sometimes|nullable|string|max:255',
+            'devices.*.notes' => 'sometimes|nullable|string|max:255',
         ]);
 
         return DB::transaction(function () use ($request, $validated) {            
@@ -67,7 +67,9 @@ class ClientController extends Controller
 
             // Direcciones
             if (!empty($validated['client_addresses'])) {
-                $client->addresses()->createMany($validated['client_addresses']);
+                foreach ($validated['client_addresses'] as $addressData) {
+                    $client->addresses()->create($addressData);
+                }
             }
 
             // Dispositivos

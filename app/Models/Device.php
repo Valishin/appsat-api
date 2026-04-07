@@ -15,6 +15,7 @@ class Device extends Model
         'model',
         'serial_number',
         'imei',
+        'sim',
         'password',
         'condition_notes',
         'notes'
