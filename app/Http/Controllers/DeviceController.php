@@ -38,6 +38,11 @@ class DeviceController extends Controller
         return $device;
     }
 
+    public function byClient($clientId)
+    {
+        return Device::where('client_id', $clientId)->get();
+    }
+
     public function update(Request $request, Device $device)
     {
         $validated = $request->validate([
