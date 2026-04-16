@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
     Route::apiResource('clients', ClientController::class);
 
     Route::apiResource('devices', DeviceController::class);
+    Route::get('clients/{clientId}/devices', [DeviceController::class, 'byClient']);
 
     Route::apiResource('client_addresses', AddressController::class);
 
