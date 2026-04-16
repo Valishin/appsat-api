@@ -59,7 +59,7 @@ class ClientController extends Controller
             'devices.*.notes' => 'sometimes|nullable|string|max:255',
         ]);
 
-        return DB::transaction(function () use ($request, $validated) {            
+        return DB::transaction(function () use ($request, $validated) {
 
             // Guardar solo datos de cliente
             $clientData = Arr::only($validated, ['type', 'name', 'dni_cif', 'phone', 'email', 'notes']);
@@ -135,5 +135,25 @@ class ClientController extends Controller
         return response()->json([
             'exists' => $exists
         ]);
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->query('search');
+
+        if (!$search) {
+            return response()->json([]);
+        }
+
+        return Client::query()
+            ->where(function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%")
+                      ->orWhere('dni_cif', 'like', "%{$search}%")
+                      ->orWhere('phone', 'like', "%{$search}%")
+                      ->orWhereRaw("JSON_CONTAINS(phone, JSON_QUOTE(?))", [$search]);
+            })
+            ->limit(10)
+            ->get();
     }
 }
